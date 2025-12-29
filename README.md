@@ -32,7 +32,7 @@ CyperGame, kullanıcıların gizli şifreleri tahmin etmeye çalıştığı eğl
 
 1. Repoyu klonlayın:
 ```bash
-git clone https://github.com/[kullanici-adi]/CyperGame.git
+git clone https://github.com/karasungurhuseyinardil/CypherGame
 cd CyperGame/CyperGame
 ```
 
