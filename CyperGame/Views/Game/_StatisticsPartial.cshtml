@@ -1,0 +1,129 @@
+@model CyperGame.Models.GameStatistics
+
+<div class="statistics-panel">
+    <h3 class="text-center mb-4">📊 İstatistikleriniz</h3>
+    
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-value">@Model.GamesPlayed</div>
+                <div class="stat-label">Oyun</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-value">@Model.WinPercentage%</div>
+                <div class="stat-label">Başarı</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-value">@Model.CurrentStreak</div>
+                <div class="stat-label">Seri</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-value">@Model.MaxStreak</div>
+                <div class="stat-label">En İyi Seri</div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.GuessDistribution.Any())
+    {
+        <div class="guess-distribution">
+            <h5 class="mb-3">Tahmin Dağılımı</h5>
+            @foreach (var item in Model.GuessDistribution.OrderBy(x => x.Key))
+            {
+                var percentage = Model.GamesWon > 0 ? (double)item.Value / Model.GamesWon * 100 : 0;
+                <div class="distribution-row mb-2">
+                    <span class="guess-number">@item.Key</span>
+                    <div class="distribution-bar-container">
+                        <div class="distribution-bar" style="width: @percentage%;">
+                            <span class="distribution-count">@item.Value</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .statistics-panel {
+        padding: 1.5rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 0.5rem;
+    }
+
+    .guess-distribution {
+        margin-top: 2rem;
+    }
+
+    .distribution-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .guess-number {
+        font-weight: 600;
+        min-width: 1.5rem;
+        color: var(--text-secondary);
+    }
+
+    .distribution-bar-container {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        height: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .distribution-bar {
+        background: linear-gradient(135deg, var(--color-correct), #059669);
+        height: 100%;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 0.75rem;
+        min-width: 2.5rem;
+        transition: width 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .distribution-count {
+        color: white;
+        font-weight: 700;
+        font-size: 0.875rem;
+    }
+</style>

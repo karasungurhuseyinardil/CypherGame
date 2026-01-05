@@ -1,0 +1,241 @@
+@model CyperGame.Models.GameViewModel
+
+@{
+    ViewData["Title"] = "Şifre Bulma Oyunu";
+}
+
+<div class="text-center" style="margin-top: 0.5rem; margin-bottom: 3rem; padding: 0 0.5rem;">
+    <h1 style="font-size: 1.4rem; margin-bottom: 0.5rem; color: #a78bfa; font-weight: 700;">
+        <span id="lockIcon" style="cursor: pointer; user-select: none;">🔐</span> Şifre Bulma Oyunu
+    </h1>
+    
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        var alertClass = Model.IsWon ? "alert-success" : (Model.IsGameOver ? "alert-danger" : "alert-info");
+        <div class="alert @alertClass" role="alert">
+            @if (Model.IsWon) { <span>🎉</span> }
+            @Model.Message
+        </div>
+    }
+
+    @if (Model.HintMessages != null && Model.HintMessages.Any())
+    {
+        foreach (var hint in Model.HintMessages)
+        {
+            <div class="alert alert-warning" role="alert">
+                💡 @hint
+            </div>
+        }
+    }
+
+    <div class="game-stats mb-2">
+        <div class="stat-item">
+            <span class="stat-value">@Model.RemainingGuesses</span>
+            <span class="stat-label">Kalan Hak</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">@Model.PasswordLength</span>
+            <span class="stat-label">Karakter</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">@Model.HintCount/@CyperGame.Models.GameViewModel.MaxHints</span>
+            <span class="stat-label">İpucu</span>
+        </div>
+        <div class="stat-item" style="cursor: pointer;" onclick="toggleStats()">
+            <span class="stat-value">📊</span>
+            <span class="stat-label">İstatistikler</span>
+        </div>
+    </div>
+
+    <div id="statsPanel" style="display: none;" class="mb-2"></div>
+
+    @if (!Model.IsGameOver)
+    {
+        <form asp-action="Guess" method="post" class="row justify-content-center g-2" id="guessForm">
+            <div class="col-auto">
+                <input type="text" 
+                       name="userGuess" 
+                       id="guessInput"
+                       class="form-control" 
+                       placeholder="Tahmininiz..." 
+                       maxlength="@Model.PasswordLength" 
+                       required 
+                       autocomplete="off" 
+                       style="font-size: 1rem; padding: 0.5rem 0.75rem;"
+                       oninput="this.value = this.value.replace(/[^a-zA-Z0-9çÇğĞıİöÖşŞüÜ]/g, '').toLocaleUpperCase('tr-TR')">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;">
+                    <span>🎯</span> Tahmin Et
+                </button>
+            </div>
+        </form>
+        
+        <form asp-action="GetHint" method="post" class="mt-2">
+            <button type="submit" 
+                    class="btn btn-warning btn-sm" 
+                    @(Model.HintCount >= CyperGame.Models.GameViewModel.MaxHints ? "disabled" : "")>
+                💡 İpucu Al (@Model.HintCount/@CyperGame.Models.GameViewModel.MaxHints) <small>(-1 Hak)</small>
+            </button>
+        </form>
+
+        <div class="mt-2 mb-2">
+            <div style="background: rgba(139, 92, 246, 0.1); border: 2px solid #8b5cf6; border-radius: 8px; padding: 8px;">
+                <span style="color: #c4b5fd; font-weight: 700; font-size: 0.95rem;">💡 Şifre @Model.PasswordLength karakterden oluşmaktadır (Harf ve Rakam)</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="mt-4 mb-3">
+            <form asp-action="NewGame" method="post">
+                <button type="submit" class="btn btn-lg btn-success">
+                    🎮 Yeni Oyun Başlat
+                </button>
+            </form>
+        </div>
+    }
+
+    @if (Model.PreviousGuesses != null && Model.PreviousGuesses.Any())
+    {
+        <div class="d-flex flex-column align-items-center mb-1" style="max-height: 40vh; overflow-y: auto; padding: 0.5rem;">
+            @foreach (var guess in Model.PreviousGuesses)
+            {
+                <div class="letter-box-container" style="margin-bottom: 0.15rem;">
+                    @foreach (var letter in guess)
+                    {
+                        string statusClass = "absent";
+                        if (letter.Status == CyperGame.Models.LetterStatus.Correct)
+                        {
+                            statusClass = "correct";
+                        }
+                        else if (letter.Status == CyperGame.Models.LetterStatus.WrongPlace)
+                        {
+                            statusClass = "wrong-place";
+                        }
+                        
+                        <div class="letter-box @statusClass flip">
+                            <h3 class="m-0" style="font-size: 1.1rem;">@letter.Character</h3>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        @if (Model.IsWon)
+        {
+            <text>
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            setTimeout(() => {
+                confetti({
+                    particleCount: 100,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 100,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+            }, 250);
+            </text>
+        }
+
+        let eggStage = 0;
+        const generateSecret = (p) => p + "-" + Math.random().toString(36).substr(2, 5).toUpperCase();
+        
+        const rawToken = generateSecret("CYP");
+        const secretToken = rawToken.split("").reverse().join("");
+        const masterKey = generateSecret("X");
+
+        const comment = document.createComment(` [DATA_SEC] IDENTITY_HASH: ${secretToken} `);
+        document.head.appendChild(comment);
+
+        let navClicks = [];
+        document.querySelector('.navbar-brand').addEventListener('click', function(e) {
+            e.preventDefault();
+            const now = Date.now();
+            navClicks.push(now);
+            if (navClicks.length > 5) navClicks.shift();
+
+            if (navClicks.length === 5) {
+                const diffs = [
+                    navClicks[1] - navClicks[0],
+                    navClicks[2] - navClicks[1],
+                    navClicks[3] - navClicks[2],
+                    navClicks[4] - navClicks[3]
+                ];
+                
+                if (diffs[0] < 400 && diffs[1] > 500 && diffs[2] < 400 && diffs[3] < 400) {
+                    const inputToken = prompt("Identity Token giriniz");
+                    if (inputToken === rawToken) { 
+                        eggStage = 1;
+                        prompt("✅ Bir sonraki aşamaya geçebilirsiniz.", masterKey);
+                    } else {
+                        alert("❌ GEÇERSİZ TOKEN! Erişim reddedildi.");
+                        navClicks = [];
+                    }
+                } else {
+                    alert("⚠️ SENKRONİZASYON HATASI");
+                    navClicks = [];
+                }
+            }
+        });
+
+        let lockClicks = 0;
+        let lastLockClickTime = 0;
+        document.getElementById('lockIcon').addEventListener('click', function() {
+            const currentTime = Date.now();
+            if (currentTime - lastLockClickTime < 400) {
+                lockClicks++;
+            } else {
+                lockClicks = 1;
+            }
+            lastLockClickTime = currentTime;
+
+            if (lockClicks === 3) {
+                if (eggStage === 1) {
+                    const inputKey = prompt("Master Key'i girin:");
+                    if (inputKey === masterKey.split("").reverse().join("")) {
+                        prompt("🔓 Kopyalayabilirsiniz:", "@Html.Raw(Model.TargetPassword)");
+                        eggStage = 0;
+                    } else {
+                        alert("❌ HATALI SEQUENCE!");
+                    }
+                } else {
+                    alert("🔒 Önce önceki adımları başarıyla tamamlamalısınız.");
+                }
+                lockClicks = 0;
+            }
+        });
+
+    });
+
+    function toggleStats() {
+        const panel = document.getElementById('statsPanel');
+        if (panel.style.display === 'none') {
+            fetch('@Url.Action("Statistics", "Game")')
+                .then(response => response.text())
+                .then(html => {
+                    panel.innerHTML = html;
+                    panel.style.display = 'block';
+                });
+        } else {
+            panel.style.display = 'none';
+        }
+    }
+</script>
+}

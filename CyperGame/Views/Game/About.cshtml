@@ -1,0 +1,69 @@
+@{
+    ViewData["Title"] = "Nasıl Oynanır";
+}
+
+<div class="text-center" style="margin-top: 0.5rem; margin-bottom: 3rem; padding: 0 0.5rem;">
+    <h1 class="fw-bold mb-2" style="font-size: 1.4rem; color: #a78bfa;">🎮 CyperGame - Nasıl Oynanır</h1>
+    
+    <p class="mb-2" style="font-size: 0.9rem; color: #e2e8f0;">Merhaba! Bu oyunda amacınız gizli şifreyi bulmak.</p>
+    
+    <div class="glass-panel mb-2" style="padding: 0.5rem;">
+        <h3 class="fw-bold mb-2" style="font-size: 1.1rem;">📏 Oyun Kuralları</h3>
+        <ul style="font-size: 0.9rem; margin-bottom: 0; padding-left: 1.25rem; list-style-position: inside;">
+            <li class="mb-1">Şifre <strong>5 ile 7 karakter</strong> arasında değişir</li>
+            <li class="mb-1">Her tahminde harflerin renklerine dikkat edin</li>
+            <li>Doğru şifreyi bulmak için tahminlerinizi kullanın</li>
+        </ul>
+    </div>
+    
+    <div class="glass-panel mb-3" style="padding: 0.75rem;">
+        <h3 class="fw-bold mb-2" style="font-size: 1.1rem;">🎨 Renk Kodları</h3>
+        <div class="row g-2">
+            <div class="col-md-4">
+                <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; border-radius: 8px; padding: 0.5rem;">
+                    <span class="badge" style="background: #10b981; font-size: 0.8rem;">Yeşil</span>
+                    <p style="margin-top: 0.5rem; margin-bottom: 0; font-size: 0.85rem;">Doğru harf, doğru yer</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div style="background: rgba(245, 158, 11, 0.1); border: 2px solid #f59e0b; border-radius: 8px; padding: 0.5rem;">
+                    <span class="badge" style="background: #f59e0b; font-size: 0.8rem;">Turuncu</span>
+                    <p style="margin-top: 0.5rem; margin-bottom: 0; font-size: 0.85rem;">Doğru harf, yanlış yer</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div style="background: rgba(59, 130, 246, 0.1); border: 2px solid #3b82f6; border-radius: 8px; padding: 0.5rem;">
+                    <span class="badge" style="background: #3b82f6; font-size: 0.8rem;">Mavi</span>
+                    <p style="margin-top: 0.5rem; margin-bottom: 0; font-size: 0.85rem;">Harf şifrede yok</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="glass-panel mb-3" style="padding: 0.75rem;">
+        <h3 class="fw-bold mb-2" style="font-size: 1.1rem;">💡 İpucu Sistemi</h3>
+        <ul style="font-size: 0.9rem; margin-bottom: 0; padding-left: 1.25rem; list-style-position: inside;">
+            <li class="mb-1"><strong>İpucu</strong> alabilirsiniz ama dikkat!</li>
+            <li class="mb-1">Her ipucu <strong>1 tahmin hakkınızı</strong> götürür</li>
+            <li>Oyun başına maksimum <strong>3 ipucu</strong> alabilirsiniz</li>
+        </ul>
+    </div>
+    
+    <div class="mt-2">
+        <p class="mb-2" style="font-size: 1rem;">
+            <strong>Bol şans! 🍀</strong>
+        </p>
+        <a asp-controller="Game" asp-action="Index" class="btn btn-primary px-4" style="padding: 0.5rem 1.5rem;">
+            🚀 Oyuna Başla
+        </a>
+    </div>
+</div>
+
+<style>
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+    }
+</style>
