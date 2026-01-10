@@ -1,0 +1,26 @@
+## Visual Studio ##
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.doccache
+
+## Visual Studio Code ##
+.vscode/
+
+## ASP.NET Core ##
+appsettings.Development.json
+
+## Publish output ##
+publish/
+[Pp]ublish/
+
+## Logs ##
+*.log
+
+## OS related ##
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
